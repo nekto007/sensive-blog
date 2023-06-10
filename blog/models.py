@@ -11,8 +11,8 @@ class PostQuerySet(models.QuerySet):
         return post_at_year
 
     def popular(self):
-        popular_posts = self.annotate(like_count=Count('likes', distinct=True)).order_by(
-            '-like_count').prefetch_related(
+        popular_posts = self.annotate(likes_count=Count('likes', distinct=True)).order_by(
+            '-likes_count').prefetch_related(
             'author')
         return popular_posts
 
