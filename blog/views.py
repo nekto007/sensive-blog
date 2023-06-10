@@ -44,11 +44,12 @@ def serialize_tag(tag):
 
 
 def index(request):
-    most_popular_posts = Post.objects.annotate(comments_count=Count('comments'), like_count=Count('likes')).order_by(
+    annotated_posts = Post.objects.annotate(comments_count=Count('comments', distinct=True))
+    most_popular_posts = annotated_posts.annotate(like_count=Count('likes', distinct=True)).order_by(
         '-like_count').prefetch_related(
         'author')[:5]
 
-    fresh_posts = Post.objects.annotate(comments_count=Count('comments')).order_by('published_at').prefetch_related(
+    fresh_posts = annotated_posts.order_by('published_at').prefetch_related(
         'author')
     most_fresh_posts = list(fresh_posts)[-5:]
 
@@ -57,7 +58,7 @@ def index(request):
 
     context = {
         'most_popular_posts': [
-            serialize_post_optimized(post) for post in most_popular_posts[:5]
+            serialize_post_optimized(post) for post in most_popular_posts
         ],
         'page_posts': [serialize_post_optimized(post) for post in most_fresh_posts],
         'popular_tags': [serialize_tag(tag) for tag in most_popular_tags],

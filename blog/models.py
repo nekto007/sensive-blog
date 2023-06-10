@@ -14,16 +14,19 @@ class Post(models.Model):
         User,
         on_delete=models.CASCADE,
         verbose_name='Автор',
-        limit_choices_to={'is_staff': True})
+        limit_choices_to={'is_staff': True},
+        db_index=True)
     likes = models.ManyToManyField(
         User,
         related_name='liked_posts',
         verbose_name='Кто лайкнул',
-        blank=True)
+        blank=True,
+        db_index=True)
     tags = models.ManyToManyField(
         'Tag',
         related_name='posts',
-        verbose_name='Теги')
+        verbose_name='Теги',
+        db_index=True)
 
     def __str__(self):
         return self.title
@@ -60,11 +63,13 @@ class Comment(models.Model):
         'Post',
         on_delete=models.CASCADE,
         related_name='comments',
-        verbose_name='Пост, к которому написан')
+        verbose_name='Пост, к которому написан',
+        db_index=True)
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        verbose_name='Автор')
+        verbose_name='Автор',
+        db_index=True)
 
     text = models.TextField('Текст комментария')
     published_at = models.DateTimeField('Дата и время публикации')
